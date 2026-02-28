@@ -1,6 +1,6 @@
 package ai.ayushkrishnappa.schemanl2sql.actions
 
-import ai.ayushkrishnappa.schemanl2sql.agent.MockSqlGenerationAgent
+import ai.ayushkrishnappa.schemanl2sql.agent.SqlGenerationAgentFactory
 import ai.ayushkrishnappa.schemanl2sql.editor.SqlEditorInserter
 import ai.ayushkrishnappa.schemanl2sql.schema.DataGripSchemaIntrospector
 import ai.ayushkrishnappa.schemanl2sql.ui.NaturalLanguageSqlPromptDialog
@@ -58,7 +58,7 @@ class GenerateSqlFromNlAction : AnAction() {
     private fun createCoordinator(project: Project): GenerateSqlFromNlCoordinator {
         return GenerateSqlFromNlCoordinator(
             schemaIntrospector = DataGripSchemaIntrospector(),
-            agent = MockSqlGenerationAgent(),
+            agent = SqlGenerationAgentFactory.create(),
             validator = SqlValidator(),
             editorInserter = SqlEditorInserter(),
         )
