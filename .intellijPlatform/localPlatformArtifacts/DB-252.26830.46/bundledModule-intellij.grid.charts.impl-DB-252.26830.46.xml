@@ -1,0 +1,15 @@
+<ivy-module version="2.0">
+  <info organisation="bundledModule" module="intellij.grid.charts.impl" revision="DB-252.26830.46"/>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications/>
+  <dependencies>
+    <dependency org="bundledModule" name="intellij.charts" rev="DB-252.26830.46"/>
+    <dependency org="bundledModule" name="intellij.grid.core.impl" rev="DB-252.26830.46"/>
+    <dependency org="bundledModule" name="intellij.grid.impl" rev="DB-252.26830.46"/>
+    <dependency org="bundledModule" name="intellij.platform.navbar.frontend" rev="DB-252.26830.46"/>
+    <dependency org="bundledModule" name="intellij.libraries.microba" rev="DB-252.26830.46"/>
+    <dependency org="bundledPlugin" name="com.intellij.platform.images" rev="DB-252.26830.46"/>
+  </dependencies>
+</ivy-module>

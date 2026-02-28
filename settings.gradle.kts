@@ -1,0 +1,1 @@
+rootProject.name = "schema-nl2sql"
