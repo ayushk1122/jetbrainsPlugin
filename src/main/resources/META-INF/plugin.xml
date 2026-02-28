@@ -6,15 +6,39 @@
     <description><![CDATA[
         Generate schema-aware SQL from natural language directly inside DataGrip.
     ]]></description>
+    <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.database</depends>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="ai.ayushkrishnappa.schemanl2sql.startup.SchemaNl2SqlStartupActivity"/>
+    </extensions>
+
     <actions>
+        <group
+                id="SchemaNl2Sql.Menu"
+                text="Schema NL2SQL"
+                description="Schema NL2SQL actions">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+
+            <action
+                    id="SchemaNl2Sql.InspectSchemaSnapshot"
+                    class="ai.ayushkrishnappa.schemanl2sql.actions.InspectSchemaSnapshotAction"
+                    text="Inspect Schema Snapshot"
+                    description="Inspect the normalized schema snapshot captured from DataGrip"/>
+        </group>
         <action
                 id="SchemaNl2Sql.GenerateSqlFromNaturalLanguage"
                 class="ai.ayushkrishnappa.schemanl2sql.actions.GenerateSqlFromNlAction"
                 text="Generate SQL from Natural Language"
                 description="Generate schema-validated SQL for the active editor">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+        <action
+                id="SchemaNl2Sql.InspectSchemaSnapshot.DatabaseExplorer"
+                class="ai.ayushkrishnappa.schemanl2sql.actions.InspectSchemaSnapshotAction"
+                text="Inspect Schema Snapshot"
+                description="Inspect the normalized schema snapshot captured from DataGrip">
+            <add-to-group group-id="DatabaseViewPopupMenu" anchor="last"/>
         </action>
     </actions>
 </idea-plugin>

@@ -8,6 +8,7 @@ interface SchemaIntrospector {
 }
 
 data class SchemaInspectionResult(
+    val dataSourceName: String? = null,
     val schema: DatabaseSchema? = null,
     val warnings: List<String> = emptyList(),
     val errors: List<String> = emptyList(),
