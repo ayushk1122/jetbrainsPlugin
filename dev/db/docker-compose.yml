@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: schema-nl2sql-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: schema_nl2sql_dev
+      POSTGRES_USER: schema_nl2sql
+      POSTGRES_PASSWORD: schema_nl2sql
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  postgres_data:
