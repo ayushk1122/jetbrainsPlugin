@@ -8,6 +8,7 @@ object SchemaSnapshotFormatter {
 
         result.dataSourceName?.let { lines += "Data source: $it" }
         result.schema?.dialect?.let { lines += "Dialect: $it" }
+        result.schema?.defaultSchema?.let { lines += "Default schema: $it" }
 
         if (result.warnings.isNotEmpty()) {
             lines += ""
@@ -33,7 +34,7 @@ object SchemaSnapshotFormatter {
     private fun renderTables(schema: DatabaseSchema): List<String> {
         return schema.tables.flatMap { table ->
             buildList {
-                add("* ${table.name}")
+                add("* ${qualifiedTableName(table.schema, table.name)}")
 
                 if (table.primaryKey.isNotEmpty()) {
                     add("  PK: ${table.primaryKey.joinToString(", ")}")
@@ -46,10 +47,14 @@ object SchemaSnapshotFormatter {
 
                 if (table.foreignKeys.isNotEmpty()) {
                     addAll(table.foreignKeys.map { foreignKey ->
-                        "  FK: ${foreignKey.column} -> ${foreignKey.referencedTable}.${foreignKey.referencedColumn}"
+                        "  FK: ${foreignKey.column} -> ${qualifiedTableName(foreignKey.referencedSchema, foreignKey.referencedTable)}.${foreignKey.referencedColumn}"
                     })
                 }
             }
         }
+    }
+
+    private fun qualifiedTableName(schema: String?, table: String): String {
+        return listOfNotNull(schema, table).joinToString(".")
     }
 }

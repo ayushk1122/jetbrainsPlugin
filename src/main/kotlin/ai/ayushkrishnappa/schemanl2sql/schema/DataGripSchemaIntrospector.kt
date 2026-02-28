@@ -54,9 +54,10 @@ class DataGripSchemaIntrospector : SchemaIntrospector {
             dataSourceName = chosenDataSource.name,
             schema = DatabaseSchema(
                 dialect = chosenDataSource.dbms.toString(),
+                defaultSchema = inferDefaultSchema(tables),
                 tables = tables
                     .map(::toTableSchema)
-                    .sortedBy(TableSchema::name),
+                    .sortedWith(compareBy(TableSchema::schema, TableSchema::name)),
             ),
             warnings = warnings,
         )
@@ -85,24 +86,38 @@ class DataGripSchemaIntrospector : SchemaIntrospector {
         tables: List<DasTable>,
         warnings: MutableList<String>,
     ): List<DasTable> {
-        val nonSystemSchemaTables = tables.filterNot { table ->
+        val userSchemaTables = tables.filterNot { table ->
             schemaNameOf(table) in excludedSchemas
         }
 
-        val publicTables = nonSystemSchemaTables.filter { table ->
-            schemaNameOf(table) == "public"
+        if (userSchemaTables.size != tables.size) {
+            val includedSchemas = userSchemaTables
+                .mapNotNull(::schemaNameOf)
+                .distinct()
+                .sorted()
+
+            warnings += buildString {
+                append("Excluded PostgreSQL system schemas from the schema snapshot.")
+                if (includedSchemas.isNotEmpty()) {
+                    append(" Included user schemas: ")
+                    append(includedSchemas.joinToString(", "))
+                    append(".")
+                }
+            }
         }
 
-        if (publicTables.isNotEmpty()) {
-            warnings += "Filtering schema snapshot to user tables in the 'public' schema."
-            return publicTables
-        }
+        return userSchemaTables
+    }
 
-        if (nonSystemSchemaTables.size != tables.size) {
-            warnings += "Excluded PostgreSQL system schemas from the schema snapshot."
-        }
+    private fun inferDefaultSchema(tables: List<DasTable>): String? {
+        val distinctSchemas = tables
+            .mapNotNull(::schemaNameOf)
+            .distinct()
 
-        return nonSystemSchemaTables
+        return when {
+            distinctSchemas.size == 1 -> distinctSchemas.single()
+            else -> null
+        }
     }
 
     private fun schemaNameOf(table: DasTable): String? = DasUtil.getSchema(table)
@@ -134,6 +149,7 @@ class DataGripSchemaIntrospector : SchemaIntrospector {
                 localColumns.mapIndexed { index, localColumn ->
                     ForeignKeySchema(
                         column = localColumn,
+                        referencedSchema = foreignKey.refTableSchema,
                         referencedTable = foreignKey.refTableName,
                         referencedColumn = referencedColumns.getOrElse(index) { "<unknown>" },
                     )
@@ -143,6 +159,7 @@ class DataGripSchemaIntrospector : SchemaIntrospector {
             .toList()
 
         return TableSchema(
+            schema = schemaNameOf(table),
             name = table.name,
             columns = columns,
             primaryKey = primaryKey,
