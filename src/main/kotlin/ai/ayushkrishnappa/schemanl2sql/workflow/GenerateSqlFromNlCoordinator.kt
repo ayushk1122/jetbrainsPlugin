@@ -31,6 +31,7 @@ class GenerateSqlFromNlCoordinator(
             SqlGenerationRequest(
                 prompt = prompt,
                 schema = schema,
+                dataSourceName = schemaResult.dataSourceName,
             ),
         )
         warnings += generationResult.warnings

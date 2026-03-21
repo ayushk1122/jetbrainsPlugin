@@ -42,8 +42,10 @@ The initial schema models a small commerce domain:
 - `products`
 - `orders`
 - `order_items`
+- `support.tickets`
+- `support.ticket_comments`
 
-This gives the plugin a stable base for joins, aggregations, date filters, and relationship traversal.
+This gives the plugin a stable base for joins, aggregations, date filters, relationship traversal, and multi-schema introspection.
 
 ## Next Expansion Paths
 
